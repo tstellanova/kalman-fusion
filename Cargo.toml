@@ -2,6 +2,12 @@
 name = "kalman-fusion"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/tstellanova/kalman-fusion"
+authors = ["Todd Stellanova <tstellanova@users.noreply.github.com>"]
+license = "BSD-3-Clause"
+keywords = ["no-std", "kalman", "filter" ]
+description = "Simple single-variable Kalman filtering for Float and Fixed types"
+readme = "README.md"
 
 
 [dependencies]

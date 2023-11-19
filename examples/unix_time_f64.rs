@@ -4,10 +4,8 @@ use chrono::Utc;
 use std::thread::sleep;
 use std::time::Duration;
 
-/**
-Use the system clock (which should be monotonically increasing)
-to iteratively update a Kalman state estimate.
- */
+// Use the system clock (which should be monotonically increasing)
+// to iteratively update a Kalman state estimate.
 fn main() {
     let now = Utc::now();
     let now_timestamp = now.timestamp() as f64;

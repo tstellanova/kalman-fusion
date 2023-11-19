@@ -6,13 +6,11 @@ use rand::prelude::*;
 use rand::rngs::StdRng;
 use rand_distr::Distribution;
 
-/**
-Simulate multiple clocks providing drifting time measurements
-of monotonically increasing timestamps,
-and feed these estimates into a single Kalman filter.
-Compare the fused estimate against the "true" clock,
-which is just a monotonically increasing counter
-*/
+/// Simulate multiple clocks providing drifting time measurements
+/// of monotonically increasing timestamps,
+/// and feed these estimates into a single Kalman filter.
+/// Compare the fused estimate against the "true" clock,
+/// which is just a monotonically increasing counter
 fn main() {
     const NUM_SENSORS: usize = 8;
     const MAX_TIME_STEPS: u32 = 1_000;

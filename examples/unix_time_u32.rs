@@ -5,11 +5,9 @@ use fixed::types::U32F32;
 use std::thread::sleep;
 use std::time::Duration;
 
-/**
-Use U32F32 from the Fixed crate
-with the system clock (which should be monotonically increasing)
-to iteratively update a Kalman state estimate
-*/
+/// Use U32F32 from the Fixed crate
+/// with the system clock (which should be monotonically increasing)
+/// to iteratively update a Kalman state estimate
 fn main() {
     let now = Utc::now();
     let now_timestamp = now.timestamp() as u32;

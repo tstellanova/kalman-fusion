@@ -1,6 +1,8 @@
 
 use num_traits::float::Float;
 
+/// Holds state for a simple Kalman filter in a single variable.
+/// This can be used to fuse inputs from multiple identical "sensors".
 #[derive(Debug, Clone, Copy)]
 pub struct KalmanState<T> {
   pub estimate: T,/// Estimated value of the variable
@@ -8,10 +10,6 @@ pub struct KalmanState<T> {
   measurement_variance: T,  // Uncertainty in the measurement itself
   process_variance: T,      // Error introduced by uncertainty in the process (model)
 }
-
-
-
-
 
 impl<T> KalmanState<T>
   where T: Float
@@ -33,9 +31,7 @@ impl<T> KalmanState<T>
 
 
 
-
-
-// Kalman update function (fold function)
+/// Kalman update function (fold function) for Float types
 pub fn kalman_update_float<T>(state: &KalmanState<T>, observation: T) -> KalmanState<T>
   where
     T: Float,
@@ -54,26 +50,9 @@ pub fn kalman_update_float<T>(state: &KalmanState<T>, observation: T) -> KalmanS
   KalmanState::new_float(new_estimate, new_uncertainty,
                          state.measurement_variance,state.process_variance)
 
-  /*
-  function kalman_update(prior_estimate, prior_uncertainty, observation, measurement_error, process_error):
-// Adjust prior uncertainty by adding process error
-adjusted_prior_uncertainty = prior_uncertainty + process_error
-
-// Kalman Gain Calculation
-kalman_gain = adjusted_prior_uncertainty / (adjusted_prior_uncertainty + measurement_error)
-
-// Update Estimate
-new_estimate = prior_estimate + kalman_gain * (observation - prior_estimate)
-
-// Update Uncertainty
-new_uncertainty = (1 - kalman_gain) * adjusted_prior_uncertainty
-
-return new_estimate, new_uncertainty
-*/
 }
 
 use fixed::traits::{ Fixed };
-
 
 impl<T> KalmanState<T>
   where T: Fixed
@@ -110,7 +89,7 @@ impl<T> KalmanState<T>
 
 
 
-
+/// Kalman update function (fold function) for Fixed types
 pub fn kalman_update_fixed<T>(state: &KalmanState<T>, observation: T) -> KalmanState<T>
   where
     T: Fixed ,

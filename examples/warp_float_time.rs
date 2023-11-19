@@ -27,12 +27,12 @@ fn main() {
         let mut sensor_values: [f64; NUM_SENSORS] = [start_timestamp; NUM_SENSORS];
         let mut internal_sensor_values: [f64; NUM_SENSORS] = [start_timestamp as f64; NUM_SENSORS];
 
-        let mut kstate = KalmanState {
-            estimate: start_timestamp,
-            uncertainty: 1E-3,
-            measurement_uncertainty: 3.5E-6,
-            process_noise: 2.0,
-        };
+        let mut kstate = KalmanState::new_float (
+            start_timestamp,
+            1E-3,
+            1E-6,
+           1E-6,
+        );
 
         for _i in 1..=MAX_TIME_STEPS {
             // Add a "fuzzy" increment of one to the monotonically increasing sensed value

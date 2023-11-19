@@ -15,12 +15,12 @@ fn main() {
     let now_timestamp = now.timestamp() as u32;
     type FixedType = U32F32;
 
-    let mut kstate = KalmanState {
-        estimate: FixedType::from_num(now_timestamp),
-        uncertainty: FixedType::from_num(1E-3),
-        measurement_uncertainty: FixedType::from_num(3.5E-6),
-        process_noise: FixedType::from_num(6),
-    };
+    let mut kstate = KalmanState::new_fixed(
+        FixedType::from_num(now_timestamp),
+        FixedType::from_num(1E-3),
+        FixedType::from_num(1E-6),
+        FixedType::from_num(1E-6),
+    );
 
     let max_iterations: usize = 100;
     for _i in 1..=max_iterations {

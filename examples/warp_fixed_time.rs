@@ -29,15 +29,15 @@ fn main() {
         let mut sensor_values: [u32; NUM_SENSORS] = [start_timestamp; NUM_SENSORS];
         let mut internal_sensor_values: [f64; NUM_SENSORS] = [start_timestamp as f64; NUM_SENSORS];
 
-        let mut kstate = KalmanState {
-            estimate: FixedType::from_num(start_timestamp),
-            uncertainty: FixedType::from_num(1E-3),
-            measurement_uncertainty: FixedType::from_num(3.5E-6),
-            process_noise: FixedType::from_num(2),
-        };
+        let mut kstate = KalmanState::new_fixed(
+            FixedType::from_num(start_timestamp),
+            FixedType::from_num(1E-3),
+            FixedType::from_num(1E-6),
+             FixedType::from_num(1E-6),
+            );
 
         for _i in 1..=MAX_TIME_STEPS {
-            // Add a "fuzzy" increment of one to the monotonically increasing sensed value
+            // Add a "fuzzy" increment  o each of the monotonically increasing sensed values
             for j in 0..NUM_SENSORS {
                 let rand_blip: f64 = normal_dist.sample(&mut my_rng).abs();
                 // the internal state of the sensor might evolve along a float continuum

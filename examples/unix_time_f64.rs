@@ -12,12 +12,12 @@ fn main() {
     let now = Utc::now();
     let now_timestamp = now.timestamp() as f64;
 
-    let mut kstate = KalmanState {
-        estimate: now_timestamp,
-        uncertainty: 1E-3,
-        measurement_uncertainty: 3.5E-6,
-        process_noise: 6.0,
-    };
+    let mut kstate = KalmanState::new_float (
+         now_timestamp,
+        1E-3,
+         1E-6,
+        1E-6,
+    );
 
     let max_iterations: usize = 100;
     for _i in 1..=max_iterations {

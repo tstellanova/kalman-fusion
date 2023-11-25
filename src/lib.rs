@@ -45,7 +45,8 @@ pub fn kalman_update_float<T>(state: &KalmanState<T>, observation: T) -> KalmanS
   // Update uncertainty
   let mut new_uncertainty = (T::one() - kalman_gain) * state.uncertainty;
   // adjust for process variance (normally done in a "predict" step
-  new_uncertainty = new_uncertainty + state.process_variance;
+  // new_uncertainty = new_uncertainty + state.process_variance;
+  new_uncertainty = new_uncertainty + state.process_variance*(state.estimate - new_estimate).abs();
 
   KalmanState::new_float(new_estimate, new_uncertainty,
                          state.measurement_variance,state.process_variance)
@@ -98,21 +99,16 @@ pub fn kalman_update_fixed<T>(state: &KalmanState<T>, observation: T) -> KalmanS
   let kalman_gain = state.uncertainty / (state.uncertainty + state.measurement_variance);
 
   // Update estimate
-
-  let new_estimate = if observation >= state.estimate {
-    state.estimate + kalman_gain * (observation - state.estimate)
-  } else {
-    state.estimate - kalman_gain * (state.estimate - observation)
-  };
-  // let new_estimate = state.estimate + kalman_gain * (observation - state.estimate);
+  let new_estimate = state.estimate + kalman_gain * (observation - state.estimate);
 
   // Update uncertainty
   let mut new_uncertainty = (T::TRY_ONE.unwrap() - kalman_gain) * state.uncertainty;
   // adjust for process variance (normally done in a "predict" step
   new_uncertainty = new_uncertainty + state.process_variance;
-
-  // let new_uncertainty =
-  //     state.process_variance * state.uncertainty * (T::TRY_ONE.unwrap() - kalman_gain);
+  let est_diff =
+    if state.estimate > new_estimate { state.estimate - new_estimate }
+    else { new_estimate - state.estimate };
+  new_uncertainty = new_uncertainty + state.process_variance*est_diff;
 
   KalmanState::new_fixed(new_estimate, new_uncertainty,
                                 state.measurement_variance, state.process_variance)
@@ -202,7 +198,7 @@ mod tests {
     let mut kstate = KalmanState::new_fixed(
       TestType::from_num(0),
       TestType::from_num(1),
-      TestType::from_num(1E-6),
+      TestType::from_num(1E-3),
       TestType::from_num(1E-3),
     );
 
@@ -216,12 +212,12 @@ mod tests {
     assert_near_eq_fixed(
       kstate.estimate,
       TestType::from_num(max_iterations),
-      TestType::from_num( 2E-3),
+      TestType::from_num( 4E-1),
     );
     assert_near_eq_fixed(
       kstate.uncertainty,
-      TestType::from_num(0.001),
-      TestType::from_num(1E-6),
+      TestType::from_num(0.002),
+      TestType::from_num(1E-3),
     );
   }
 
@@ -229,7 +225,7 @@ mod tests {
   fn test_with_monotonic_increasing_i16f16() {
     type TestType = I16F16;
     let mut kstate = KalmanState::new_fixed(
-      TestType::from_num(1.0),
+      TestType::from_num(0.0),
       TestType::from_num(1.0),
       TestType::from_num(1E-3),
       TestType::from_num(1E-3),
@@ -249,7 +245,7 @@ mod tests {
     );
     assert_near_eq_fixed(
       kstate.uncertainty,
-      TestType::from_num(0.001),
+      TestType::from_num(0.003),
       TestType::from_num(1E-3),
     );
   }
@@ -257,15 +253,16 @@ mod tests {
   #[test]
   fn test_with_monotonic_increasing_u32f32() {
     type TestType = U32F32;
+    let step_size: usize = 1000;
+
     let mut kstate = KalmanState::new_fixed (
       TestType::from_num(0),
       TestType::from_num(1),
-      TestType::from_num(1E-6),
-      TestType::from_num(1E-6),
+      TestType::from_num(1E-3),
+      TestType::from_num(1E-3),
     );
 
     let max_iterations: usize = TestType::MAX.to_num::<u32>() as usize;
-    let step_size: usize = 1000;
     for i in (1..=max_iterations).step_by(step_size) {
       kstate = kalman_update_fixed(&kstate, TestType::from_num(i));
     }
@@ -279,8 +276,8 @@ mod tests {
     );
     assert_near_eq_fixed(
       kstate.uncertainty,
-      TestType::from_num(2E-6),
-      TestType::from_num(1E-6),
+      TestType::from_num(1),
+      TestType::from_num(1E-2),
     );
   }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "kalman-fusion"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 repository = "https://github.com/tstellanova/kalman-fusion"
 authors = ["Todd Stellanova <tstellanova@users.noreply.github.com>"]
